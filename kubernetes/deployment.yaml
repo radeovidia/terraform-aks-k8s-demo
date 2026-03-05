@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: dummy-service
   namespace: demo-app
-  labels:
-    app: dummy-service
 spec:
   replicas: 1
   selector:
@@ -16,51 +14,7 @@ spec:
         app: dummy-service
     spec:
       containers:
-        - name: dummy-service
+        - name: nginx
           image: nginx:latest
           ports:
             - containerPort: 80
-          resources:
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
-            requests:
-              cpu: "250m"
-              memory: "256Mi"
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: dummy-service
-  namespace: demo-app
-spec:
-  selector:
-    app: dummy-service
-  ports:
-    - port: 80
-      targetPort: 80
-  type: ClusterIP
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: dummy-service
-  namespace: demo-app
-  annotations:
-    kubernetes.io/ingress.class: nginx
-spec:
-  rules:
-    - host: dummy.local
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: dummy-service
-                port:
-                  number: 80
