@@ -1,3 +1,11 @@
+# 1. NAMESPACE - Membuat "kamar" isolasi
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo-app
+
+---
+# 2. DEPLOYMENT - Menjalankan aplikasi (Hanya 1 container agar tidak bentrok port)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,14 +15,53 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: dummy-service
+      app: dummy-service # Harus sama dengan label di template pod
   template:
     metadata:
       labels:
         app: dummy-service
     spec:
       containers:
-        - name: nginx
-          image: nginx:latest
+        - name: dummy-service
+          image: nginxdemos/hello # Pake image ini biar dapet tampilan info pod
           ports:
-            - containerPort: 80
+            - containerPort: 80 # Port internal container
+
+---
+# 3. SERVICE - Alamat internal agar Pod bisa dicari
+apiVersion: v1
+kind: Service
+metadata:
+  name: dummy-service
+  namespace: demo-app
+spec:
+  selector:
+    app: dummy-service # Mencari pod dengan label ini
+  ports:
+    - protocol: TCP
+      port: 80       # Port yang dibuka oleh Service
+      targetPort: 80 # Mengarah ke containerPort di atas
+  type: ClusterIP
+
+---
+# 4. INGRESS - Gerbang akses dari browser (demo.local)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dummy-ingress
+  namespace: demo-app
+  annotations:
+    # Menggunakan Nginx Ingress Controller yang lo instal di Terraform
+    kubernetes.io/ingress.class: nginx 
+spec:
+  rules:
+    - host: demo.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dummy-service
+                port:
+                  number: 80
