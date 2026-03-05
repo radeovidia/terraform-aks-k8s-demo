@@ -1,38 +1,39 @@
-# Terraform AKS Kubernetes Deployment
+# AKS Terraform Demo
 
-This repository demonstrates provisioning an Azure Kubernetes Service (AKS)
-cluster using Terraform and deploying a sample NGINX application using
-Kubernetes manifests.
+This repository contains Terraform configuration to provision an Azure Kubernetes Service (AKS) cluster and Kubernetes manifests for a sample application deployment.
 
-## Tech Stack
+## Components
 
-- Terraform
-- Azure Kubernetes Service (AKS)
-- Kubernetes
-
-## Infrastructure
-
-Terraform will provision:
-
+Terraform
 - Azure Resource Group
-- AKS Cluster
-- Default Node Pool
+- Azure Kubernetes Service (AKS)
 
-## Usage
+Kubernetes
+- Namespace
+- Deployment
+- Service
+- Ingress
 
-### Initialize Terraform
+## Terraform Usage
+
+Initialize Terraform
 
 terraform init
 
-### Plan Infrastructure
+Plan deployment
 
 terraform plan
 
-### Apply Infrastructure
+Apply infrastructure
 
 terraform apply
 
-### Deploy Application
+## Kubernetes Deployment
+
+Apply namespace
+
+kubectl apply -f kubernetes/namespace.yaml
+
+Apply application
 
 kubectl apply -f kubernetes/deployment.yaml
-kubectl apply -f kubernetes/service.yaml
